@@ -1,29 +1,39 @@
+
 name: CI Hola Mundo
 
-# Define cuándo se ejecutará el pipeline
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
+      - CRM
+      - SCM
+      - ERP
+
   pull_request:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
 
 jobs:
   smoke-test:
+    name: Prueba básica del pipeline
     runs-on: ubuntu-latest
 
     steps:
       - name: Descargar el código
         uses: actions/checkout@v4
 
-      - name: Ejecutar saludo de prueba
-        run: echo "¡Hola Mundo desde GitHub Actions!"
+      - name: Verificar que GitHub Actions funciona
+        run: echo "Hola Mundo desde GitHub Actions"
 
-      - name: Test de aserción simple (bash)
+      - name: Ejecutar prueba de aserción
+        shell: bash
         run: |
           RESULT="hola"
+
           if [ "$RESULT" = "hola" ]; then
             echo "Test superado exitosamente."
-            exit 0
           else
             echo "Test fallido."
             exit 1
