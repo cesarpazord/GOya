@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GO-ya · Compra y recibe en tu facultad</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- ============ ACCESO ============ -->
+<div id="auth" hidden>
+  <header class="top"><div class="top-in"><span class="logo">GO<b>-ya</b></span></div></header>
+  <div class="auth-box">
+    <div class="tabs-auth" role="tablist">
+      <button id="t-login" class="on" type="button">Ingresa</button>
+      <button id="t-registro" type="button">Crea tu cuenta</button>
+    </div>
+
+    <form id="f-login" class="panel">
+      <h1>Ingresa a tu cuenta</h1>
+      <label>Correo o usuario<input name="correo" type="text" required autocomplete="username"></label>
+      <label>Contraseña<input name="password" type="password" required autocomplete="current-password"></label>
+      <button class="btn">Ingresar</button>
+    </form>
+
+    <form id="f-registro" class="panel" hidden>
+      <h1>Crea tu cuenta</h1>
+      <label>Nombre completo<input name="nombre" required></label>
+      <label>Correo<input name="correo" type="email" required autocomplete="username"></label>
+      <label>Contraseña<input name="password" type="password" minlength="8" required autocomplete="new-password">
+        <small>Mínimo 8 caracteres</small></label>
+      <label>Quiero usar GO-ya como
+        <select name="rol">
+          <option value="consumidor">Comprador</option>
+          <option value="vendedor">Vendedor</option>
+          <option value="repartidor">Repartidor</option>
+        </select>
+      </label>
+      <label>Comprobante de estudiante
+        <input name="documento" type="file" accept=".pdf,.png,.jpg,.jpeg" required>
+        <small>Credencial o constancia de inscripción (PDF, JPG o PNG)</small></label>
+      <button class="btn">Crear cuenta</button>
+    </form>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app" hidden>
+  <header class="top">
+    <div class="top-in">
+      <span class="logo">GO<b>-ya</b></span>
+      <input id="buscar" class="buscar" type="search" placeholder="Buscar productos" aria-label="Buscar productos" hidden>
+      <div class="user">
+        <span id="user-nombre"></span>
+        <span id="user-rol" class="chip"></span>
+        <button id="btn-rol" class="link" type="button">Cambiar perfil</button>
+        <button id="btn-salir" class="link" type="button">Salir</button>
+      </div>
+    </div>
+    <nav id="nav" class="nav"></nav>
+  </header>
+
+  <dialog id="dlg-rol">
+    <form method="dialog" id="f-rol" class="panel" style="margin:0;box-shadow:none">
+      <h2 style="margin-top:0">Solicitar cambio de perfil</h2>
+      <p class="meta" id="estado-solicitud"></p>
+      <label>Quiero ser<select name="rol"></select></label>
+      <label>Motivo<textarea name="motivo" rows="3" minlength="5" maxlength="500" required placeholder="Cuéntale al administrador por qué quieres cambiar"></textarea></label>
+      <div class="dos"><button value="cancel" class="btn sec" formnovalidate>Cancelar</button><button value="ok" class="btn">Enviar solicitud</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-eval">
+    <form method="dialog" id="f-eval" class="panel" style="margin:0;box-shadow:none;max-height:85vh;overflow:auto">
+      <h2 style="margin-top:0">Evalúa tu compra</h2>
+      <div id="eval-campos"></div>
+      <div class="dos"><button value="cancel" class="btn sec" formnovalidate>Cancelar</button><button value="ok" class="btn">Enviar evaluación</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-clave">
+    <form method="dialog" id="f-clave" class="panel" style="margin:0;box-shadow:none">
+      <h2 style="margin-top:0">Confirmar entrega</h2>
+      <label>Clave de entrega del comprador
+        <input name="clave" inputmode="numeric" autocomplete="off" pattern="[0-9 ]{6,7}" maxlength="7" placeholder="000 000" required>
+        <small>El comprador la ve en su pedido. Pídesela al entregar.</small></label>
+      <div class="dos"><button value="cancel" class="btn sec" formnovalidate>Cancelar</button><button value="ok" class="btn">Confirmar</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-opiniones">
+    <div class="panel" style="margin:0;box-shadow:none;max-height:85vh;overflow:auto">
+      <div id="opiniones-cont"></div>
+      <form method="dialog"><button class="btn sec">Cerrar</button></form>
+    </div>
+  </dialog>
+
+  <main>
+    <div id="banner-solicitud" class="banner" hidden></div>
+    <!-- Comprador -->
+    <section id="v-productos" hidden><div id="grid-productos" class="grid"></div></section>
+    <section id="v-carrito" hidden><div id="carrito"></div></section>
+    <section id="v-pedidos" hidden><h2>Mis compras</h2><div id="lista-pedidos"></div></section>
+
+    <!-- Vendedor -->
+    <section id="v-vender" hidden>
+      <form id="form-producto" class="panel">
+        <h2 id="titulo-form">Publicar producto</h2>
+        <label>Título<input name="nombre" maxlength="120" required></label>
+        <label>Descripción<textarea name="descripcion" rows="3" required></textarea></label>
+        <div class="dos">
+          <label>Precio (MXN)<input name="precio" type="number" step="0.01" min="0" required></label>
+          <label>Stock<input name="cantidad" type="number" min="0" required></label>
+        </div>
+        <label>¿Dónde lo vendes?<input name="ubicacion_venta" placeholder="Ej. Edificio A, planta baja" required></label>
+        <label>Foto
+          <input name="foto" type="file" accept=".png,.jpg,.jpeg,.webp" required>
+        </label>
+        <img id="preview" alt="" hidden>
+        <button id="btn-guardar-producto" class="btn">Publicar</button>
+        <button id="btn-cancelar-edicion" class="btn sec" type="button" hidden style="margin-top:8px">Cancelar edición</button>
+      </form>
+      <h2>Mis publicaciones</h2>
+      <div id="mis-productos" class="grid"></div>
+    </section>
+    <section id="v-ventas" hidden><h2>Ventas</h2><div id="lista-ventas"></div></section>
+    <section id="v-avisos" hidden><h2>Avisos</h2><ul id="lista-avisos" class="avisos"></ul></section>
+
+    <!-- Cuenta pendiente -->
+    <section id="v-pendiente" hidden><div id="msg-pendiente" class="panel" style="margin-top:20px"></div></section>
+
+    <!-- Administrador -->
+    <section id="v-validaciones" hidden>
+      <h2>Validación de estudiantes</h2>
+      <label class="filtro">Mostrar
+        <select id="filtro-adm">
+          <option value="pendiente">Pendientes</option>
+          <option value="aprobado">Aprobadas</option>
+          <option value="rechazado">Rechazadas</option>
+          <option value="">Todas</option>
+        </select>
+      </label>
+      <div id="lista-validaciones"></div>
+    </section>
+
+    <section id="v-solicitudes" hidden>
+      <h2>Solicitudes de cambio de perfil</h2>
+      <label class="filtro">Mostrar
+        <select id="filtro-sol">
+          <option value="pendiente">Pendientes</option>
+          <option value="aprobada">Aprobadas</option>
+          <option value="rechazada">Rechazadas</option>
+          <option value="">Todas</option>
+        </select>
+      </label>
+      <div id="lista-solicitudes"></div>
+    </section>
+
+    <!-- Repartidor -->
+    <section id="v-entregas" hidden>
+      <h2>Para recoger</h2><div id="entregas-disp"></div>
+      <h2>Mis entregas</h2><div id="entregas-mias"></div>
+    </section>
+  </main>
+</div>
+
+<div id="toast" role="status"></div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
