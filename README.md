@@ -1,12 +1,13 @@
 # GO-ya
 Plataforma de negocios electrónicos y logística para la comunidad de la Facultad de Ingeniería (UNAM). Conecta vendedores, consumidores y repartidores dentro del campus.
 
-## Equipo 
-Almodovar Tufiño Tarek 
-Jiménez Guerrero Ximena Thaily 
-Urzúa Cruz Mónica Ixchel 
-Paz Orduñez Julio César 
-López González Héctor Albino 
+## Equipo de desarrollo
+
+- Tarek Almodovar Tufiño
+- Ximena Thaily Jiménez Guerrero
+- Mónica Ixchel Urzúa Cruz
+- Julio César Paz Orduñez
+- Héctor Albino López González
 
 
 ```
